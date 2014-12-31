@@ -1,4 +1,0 @@
-#ifndef lru
-#defin lru
-void LeastRecentlyUsed(char *file_name,string frame_table_size);
-#endif
