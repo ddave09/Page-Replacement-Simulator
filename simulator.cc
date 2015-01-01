@@ -1,4 +1,5 @@
 #include"lru.h"
+#include"async_io.h"
 
 int main(int argc, char* argv[]){
 	count_accesses(argv[1]);
