@@ -23,7 +23,7 @@ void LeastRecentlyUsed(char *file_name,string frame_table_size){
 	map<int,pagev>::iterator itpage;
 	string line;
 	int number;
-	unsigned long hits=0,misses=0,accesses=0;
+	//unsigned long hits=0,misses=0,accesses=0;
 	unsigned int lsize =atoi(frame_table_size.c_str());
   	ifstream pf (file_name);
   	if (pf.is_open()){
