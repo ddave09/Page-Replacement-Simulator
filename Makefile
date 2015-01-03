@@ -4,7 +4,7 @@ CC = g++
 CCFLAGS = -Wall -std=gnu++0x
 CCDFLAGS = -g -Wall -std=gnu++0x
 
-all: paging
+all: debug
 
 debug: simulator.cc async_io_ops.cc lru.cc
 	$(CC) $(CCDFLAGS) -pthread -o paging simulator.cc async_io_ops.cc lru.cc
