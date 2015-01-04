@@ -16,7 +16,7 @@ unsigned long long ghits = 0;
 unsigned long long gmisses = 0;
 
 /* Least recently used memory page replacement algorithm using STACK method */
-void LeastRecentlyUsed(char *file_name,string frame_table_size){
+void least_recently_used(string file_name,string frame_table_size){
 	list<int>lru;
 	list<int>::iterator itlru;
 	map<int,pagev> page;
