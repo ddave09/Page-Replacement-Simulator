@@ -10,5 +10,5 @@
 #include<algorithm>
 
 using namespace std;
-void least_recently_used(string file_name, string frame_table_size);
+void least_recently_used(string file_name, string frame_size);
 #endif
