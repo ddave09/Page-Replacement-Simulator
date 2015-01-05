@@ -19,7 +19,6 @@ struct line_members {
 
 unsigned long long ghits = 0;
 unsigned long long gmisses = 0;
-
 unsigned long long core_stat[num_of_cores] = {0};
 
 void generate_page_report(map<int, pagev> page, map<int, pagev>::iterator itpage){
