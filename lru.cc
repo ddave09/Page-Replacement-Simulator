@@ -2,9 +2,9 @@
 #define num_of_cores 4
 
 struct pagev {
-	unsigned accesses;
-	unsigned hits;
-	unsigned misses;
+	unsigned long long accesses;
+	unsigned long long hits;
+	unsigned long long misses;
 	pagev() {
 		accesses = 0;
 		hits = 0;
@@ -22,25 +22,21 @@ unsigned long long gmisses = 0;
 unsigned long long core_stat[num_of_cores] = {0};
 
 void generate_page_report(map<int, pagev> page, map<int, pagev>::iterator itpage){
-	ofstream paging_report;
+	ofstream paging_report, aim_report;
 	paging_report.open("paging_report.txt");
 	paging_report
 			<< "Page Numer ---------- Accesses ----------------- Hits ----------------- Misses\n";
 	for (itpage = page.begin(); itpage != page.end(); itpage++) {
 		ghits = ghits + itpage->second.hits;
 		gmisses = gmisses + itpage->second.misses;
-		stringstream ssfirst, ssa, ssh, ssm;
-		ssfirst << itpage->first;
-		string s1 = ssfirst.str();
-		ssa << itpage->second.accesses;
-		s1 = s1 + " -------------------- " + ssa.str();
-		ssh << itpage->second.hits;
-		s1 = s1 + " -------------------- " + ssh.str();
-		ssm << itpage->second.misses;
-		s1 = s1 + " -------------------- " + ssm.str();
-		paging_report << s1 + "\n";
+		paging_report<<itpage->first<<"----------"<<itpage->second.accesses<<"-----------------"<<itpage->second.hits
+			<<"-----------------"<<itpage->second.misses<<endl;
 	}
-	cout << "Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " misses : " << gmisses << endl;
+	aim_report.open("Aim_report.txt");
+	aim_report<<"Accesses     Hits     Misses\n";
+	aim_report<<"Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " Misses : " << gmisses; 
+	aim_report.close();
+	cout << "Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " Misses : " << gmisses << endl;
 	paging_report.close();
 }
 
@@ -48,13 +44,9 @@ void generate_core_report(unsigned long long core_stat[]){
 	ofstream core_report;
 	core_report.open("core_miss_report.txt");
 	for(int i=0; i<num_of_cores; i++){
-		stringstream itoss, mtoss;
-		itoss<<i;
-		mtoss<<core_stat[i];
-		string core = itoss.str();
-		string core_misses = mtoss.str();
-		core_report<<core + ": " + core_misses + "\n";
+		core_report<<i<<": "<<core_stat[i]<<endl;
 	}
+	core_report.close();
 }
 
 void split_line(struct line_members &lm, string line) {

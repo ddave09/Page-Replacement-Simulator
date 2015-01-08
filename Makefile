@@ -1,8 +1,8 @@
 .PHONY: clean
 
 CC = g++
-CCFLAGS = -Wall -std=gnu++11
-CCDFLAGS = -g -Wall -std=gnu++11
+CCFLAGS = -Wall -std=gnu++0x
+CCDFLAGS = -g -Wall -std=gnu++0x
 
 all: paging
 
