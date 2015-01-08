@@ -72,6 +72,7 @@ istringstream iss(line);
 }
 
 void least_recently_used(string file_name, string frame_size) {
+  unsigned long long intc_counter = 0, inc_counter = 0;
 	list<int> lru;
 	list<int>::iterator itlru;
 	map<int, pagev> page;
@@ -82,6 +83,11 @@ void least_recently_used(string file_name, string frame_size) {
 	ifstream pf(file_name);
 	if (pf.is_open()) {
 		while (getline(pf, line)) {
+			if(intc_counter == inc_counter){
+				cout<<"Working on: "<<intc_counter<<"line"<<endl;
+				intc_counter = inc_counter+1000000;
+			}
+			inc_counter++;
 			struct line_members lm;
 			split_line(lm, line);
 			number = atoi(lm.page_num.c_str());
