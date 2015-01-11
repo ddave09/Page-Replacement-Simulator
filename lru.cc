@@ -17,30 +17,42 @@ struct line_members {
 	string page_num;
 };
 
+unordered_map<int, pagev> page;
+unordered_map<int, pagev>::iterator itpage;
 unsigned long long ghits = 0;
 unsigned long long gmisses = 0;
 unsigned long long core_stat[num_of_cores] = {0};
 
-void generate_page_report(map<int, pagev> page, map<int, pagev>::iterator itpage){
-	ofstream paging_report, aim_report;
+void record_page_stat(int number, bool c){
+	if(c)
+		page[number].hits++;
+  else
+		page[number].misses++;	
+	page[number].accesses++;
+}
+
+void generate_aim_report(){
+	ofstream aim_report;
+	aim_report.open("Aim_report.txt");
+	aim_report<<"Accesses     Hits     Misses\n";
+	aim_report<<ghits+gmisses<<" "<<ghits<<"  "<<gmisses << endl;
+	aim_report.close();
+	cout<<"Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " Misses : " << gmisses<<endl;
+}
+
+void generate_page_report(){
+	ofstream paging_report;
 	paging_report.open("paging_report.txt");
 	paging_report
 			<< "Page Numer ---------- Accesses ----------------- Hits ----------------- Misses\n";
 	for (itpage = page.begin(); itpage != page.end(); itpage++) {
-		ghits = ghits + itpage->second.hits;
-		gmisses = gmisses + itpage->second.misses;
 		paging_report<<itpage->first<<"----------"<<itpage->second.accesses<<"-----------------"<<itpage->second.hits
 			<<"-----------------"<<itpage->second.misses<<endl;
 	}
-	aim_report.open("Aim_report.txt");
-	aim_report<<"Accesses     Hits     Misses\n";
-	aim_report<<"Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " Misses : " << gmisses; 
-	aim_report.close();
-	cout << "Accesses:: "<<ghits+gmisses<< "Hits:: " << ghits << " Misses : " << gmisses << endl;
 	paging_report.close();
 }
 
-void generate_core_report(unsigned long long core_stat[]){
+void generate_core_report(){
 	ofstream core_report;
 	core_report.open("core_miss_report.txt");
 	for(int i=0; i<num_of_cores; i++){
@@ -65,10 +77,8 @@ istringstream iss(line);
 
 void least_recently_used(string file_name, string frame_size) {
   unsigned long long intc_counter = 0, inc_counter = 0;
-	list<int> lru;
-	list<int>::iterator itlru;
-	map<int, pagev> page;
-	map<int, pagev>::iterator itpage;
+	deque<int> lru;
+	deque<int>:: iterator itlru;
 	string line;
 	int number;
 	unsigned int lsize = atoi(frame_size.c_str());
@@ -76,7 +86,7 @@ void least_recently_used(string file_name, string frame_size) {
 	if (pf.is_open()) {
 		while (getline(pf, line)) {
 			if(intc_counter == inc_counter){
-				cout<<"Working on: "<<intc_counter<<"line"<<endl;
+				cout<<"Working on line "<<intc_counter<<endl;
 				intc_counter = inc_counter+1000000;
 			}
 			inc_counter++;
@@ -86,41 +96,21 @@ void least_recently_used(string file_name, string frame_size) {
 			itlru = find(lru.begin(), lru.end(), number);
 			if (itlru != lru.end()) {
 				int lvalue = *itlru;
-				lru.push_back(lvalue);
 				lru.erase(itlru);
-				itpage = page.find(number);
-				if (itpage != page.end()) {
-					itpage->second.hits++;
-					itpage->second.accesses++;
-				} else {
-					page[number].hits = 1;
-					page[number].accesses = 1;
-				}
+				lru.push_back(lvalue);
+				ghits++;
+				record_page_stat(number, true);
 			} else if (lsize == lru.size()) {
-				lru.remove(lru.front());
+				lru.pop_front();
 				lru.push_back(number);
-				itpage = page.find(number);
-				if (itpage != page.end()) {
-					itpage->second.misses++;
-					itpage->second.accesses++;
-					core_stat[atoi(lm.core.c_str())]++;
-				} else {
-					page[number].misses = 1;
-					page[number].accesses = 1;
-					core_stat[atoi(lm.core.c_str())]++;
-				}
+				gmisses++;
+				core_stat[atoi(lm.core.c_str())]++;
+				record_page_stat(number, false);
 			} else {
 				lru.push_back(number);
-				itpage = page.find(number);
-				if (itpage != page.end()) {
-					itpage->second.misses++;
-					itpage->second.accesses++;
-					core_stat[atoi(lm.core.c_str())]++;
-				} else {
-					page[number].misses = 1;
-					page[number].accesses = 1;
-					core_stat[atoi(lm.core.c_str())]++;
-				}
+				gmisses++;
+				core_stat[atoi(lm.core.c_str())]++;
+				record_page_stat(number, false);
 			}
 		}
 		pf.close();
@@ -129,7 +119,9 @@ void least_recently_used(string file_name, string frame_size) {
 	}
 
 	/* Report Generation */
-	generate_page_report(page, itpage);
-	generate_core_report(core_stat);
+	generate_aim_report();
+	generate_core_report();
+	generate_page_report();
+	cout<<"Done!"<<endl;
 }
 

@@ -1,12 +1,12 @@
 #ifndef LRU
 #define LRU
 #include<iostream>
-#include<map>
+#include<unordered_map>
 #include<fstream>
 #include<stdio.h>
 #include<sstream>
 #include<cstdlib>
-#include<list>
+#include<deque>
 #include<algorithm>
 
 using namespace std;
